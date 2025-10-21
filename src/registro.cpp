@@ -1,6 +1,7 @@
-#include "registro.h"
+#include "registro.hpp"
 #include <cstring>
 #include <arpa/inet.h>
+#include <vector>
 
 static void write_u32(std::vector<char>& out, uint32_t v) {
     uint32_t be = htonl(v);
@@ -31,8 +32,8 @@ std::vector<char> Registro::serializar() const {
     write_u32(out, (uint32_t)autores.size());
     out.insert(out.end(), autores.begin(), autores.end());
     write_u32(out, (uint32_t)citacoes);
-    write_u32(out, (uint32_t)atualizacao.size());
-    out.insert(out.end(), atualizacao.begin(), atualizacao.end());
+    write_u32(out, (uint32_t)data_atualizacao.size());
+    out.insert(out.end(), data_atualizacao.begin(), data_atualizacao.end());
     write_u32(out, (uint32_t)snippet.size());
     out.insert(out.end(), snippet.begin(), snippet.end());
     uint32_t total = (uint32_t)(out.size() - 4);
@@ -64,7 +65,7 @@ Registro Registro::desserializar_from_buffer(const char* buf, size_t size) {
     if (remaining < 4) return r;
     len = read_u32(p); p += 4; remaining -= 4;
     if (remaining < len) len = (uint32_t)remaining;
-    r.atualizacao.assign(p, p+len); p += len; remaining -= len;
+    r.data_atualizacao.assign(p, p+len); p += len; remaining -= len;
     if (remaining < 4) return r;
     len = read_u32(p); p += 4; remaining -= 4;
     if (remaining < len) len = (uint32_t)remaining;

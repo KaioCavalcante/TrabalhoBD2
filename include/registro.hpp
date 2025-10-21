@@ -1,6 +1,6 @@
 #ifndef REGISTRO_HPP
 #define REGISTRO_HPP
-
+#include <vector>
 #include <string>
 
 struct Registro {
@@ -11,6 +11,8 @@ struct Registro {
     int citacoes;
     std::string data_atualizacao;
     std::string snippet;
+    std::vector<char> serializar() const;
+    static Registro desserializar_from_buffer(const char* buf, size_t size);
 };
 
 #endif 

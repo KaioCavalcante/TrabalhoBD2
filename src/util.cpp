@@ -1,70 +1,67 @@
 #include "util.hpp"
 #include <sstream>
-#include <iomanip>
+#include <algorithm>
 
+// Parser CSV robusto, separador ';', suporta aspas e aspas duplas escapadas ("")
 std::vector<std::string> dividir_csv(const std::string &linha) {
     std::vector<std::string> campos;
-    std::string cur;
-    bool in_quotes = false;
+    std::string atual;
+    bool entre_aspas = false;
+
     for (size_t i = 0; i < linha.size(); ++i) {
         char c = linha[i];
+
         if (c == '"') {
-            // se aspas duplas aparecendo duas vezes, é escapado -> incluir uma e pular
-            if (in_quotes && i + 1 < linha.size() && linha[i+1] == '"') {
-                cur.push_back('"');
+            if (entre_aspas && i + 1 < linha.size() && linha[i + 1] == '"') {
+                atual.push_back('"');
                 ++i;
             } else {
-                in_quotes = !in_quotes;
+                entre_aspas = !entre_aspas;
             }
-        } else if (c == ',' && !in_quotes) {
-            campos.push_back(cur);
-            cur.clear();
+        } else if (c == ';' && !entre_aspas) {
+            campos.push_back(atual);
+            atual.clear();
         } else {
-            cur.push_back(c);
+            atual.push_back(c);
         }
     }
-    campos.push_back(cur);
+
+    campos.push_back(atual);
     return campos;
 }
 
 Registro campos_para_registro(const std::vector<std::string> &campos) {
     Registro r;
-    // proteger se campos faltantes
-    r.id = campos.size() > 0 && !campos[0].empty() ? std::stoi(campos[0]) : 0;
+    try { r.id = !campos[0].empty() ? std::stoi(campos[0]) : 0; } catch(...) { r.id=0; }
     r.titulo = campos.size() > 1 ? campos[1] : "";
-    r.ano = campos.size() > 2 && !campos[2].empty() ? std::stoi(campos[2]) : 0;
+    try { r.ano = campos.size() > 2 && !campos[2].empty() ? std::stoi(campos[2]) : 0; } catch(...) { r.ano=0; }
     r.autores = campos.size() > 3 ? campos[3] : "";
-    r.citacoes = campos.size() > 4 && !campos[4].empty() ? std::stoi(campos[4]) : 0;
+    try { r.citacoes = campos.size() > 4 && !campos[4].empty() ? std::stoi(campos[4]) : 0; } catch(...) { r.citacoes=0; }
     r.data_atualizacao = campos.size() > 5 ? campos[5] : "";
     r.snippet = campos.size() > 6 ? campos[6] : "";
     return r;
 }
 
-static std::string escape_csv_field(const std::string &s) {
-    bool need_quotes = s.find_first_of(",\"\n") != std::string::npos;
-    std::string out;
-    if (need_quotes) out.push_back('"');
-    for (char c : s) {
-        if (c == '"') {
-            out.push_back('"'); // escape
-            out.push_back('"');
-        } else {
-            out.push_back(c);
-        }
-    }
-    if (need_quotes) out.push_back('"');
-    return out;
-}
-
 std::string registro_para_csvline(const Registro &r) {
     std::ostringstream ss;
-    ss << r.id << ",";
-    ss << escape_csv_field(r.titulo) << ",";
-    ss << r.ano << ",";
-    ss << escape_csv_field(r.autores) << ",";
-    ss << r.citacoes << ",";
-    ss << escape_csv_field(r.data_atualizacao) << ",";
-    ss << escape_csv_field(r.snippet);
+    auto escape = [](const std::string &s){
+        bool aspas = s.find_first_of(";\n\"") != std::string::npos;
+        std::string out;
+        if (aspas) out.push_back('"');
+        for(char c : s){
+            if(c=='"'){ out += "\"\""; } else { out += c; }
+        }
+        if (aspas) out.push_back('"');
+        return out;
+    };
+
+    ss << r.id << ";"
+       << escape(r.titulo) << ";"
+       << r.ano << ";"
+       << escape(r.autores) << ";"
+       << r.citacoes << ";"
+       << escape(r.data_atualizacao) << ";"
+       << escape(r.snippet);
     return ss.str();
 }
 

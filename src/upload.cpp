@@ -1,9 +1,8 @@
-// upload.cpp
-// Uso: ./bin/upload /data/input.csv
 #include <iostream>
 #include <fstream>
 #include <filesystem>
 #include <chrono>
+#include <algorithm>
 #include "util.hpp"
 
 using namespace std;
@@ -13,6 +12,7 @@ int main(int argc, char** argv) {
         cerr << "Uso: upload <arquivo.csv>\n";
         return 1;
     }
+
     string csv_path = argv[1];
     string db_dir = "/data/db";
     filesystem::create_directories(db_dir);
@@ -45,39 +45,36 @@ int main(int argc, char** argv) {
     long total_reg = 0;
     auto t0 = chrono::high_resolution_clock::now();
 
-    // lê CSV (assume que cada linha tem o registro completo; parser cuida de vírgulas/aspas)
-    while (std::getline(fin, linha)) {
+    // Pula cabeçalho se houver
+    if (getline(fin, linha)) cout << "[UPLOAD] Cabeçalho detectado: " << linha << "\n";
+
+    while (getline(fin, linha)) {
+        linha.erase(remove(linha.begin(), linha.end(), '\r'), linha.end());
         if (linha.empty()) continue;
+
         auto campos = dividir_csv(linha);
-        // simples validação
-        if (campos.size() < 7) {
-            // pula linhas incompletas
-            continue;
-        }
+        if (campos.size() < 7) continue;
+
         Registro r = campos_para_registro(campos);
         string csvline = registro_para_csvline(r) + "\n";
 
-        // offset antes de escrever
         long offset = fout_dados.tellp();
         fout_dados << csvline;
         fout_dados.flush();
 
-        // índice primário: id (int32) + offset (int64)
         int32_t id32 = static_cast<int32_t>(r.id);
         int64_t off64 = static_cast<int64_t>(offset);
         fout_idx_prim.write(reinterpret_cast<char*>(&id32), sizeof(id32));
         fout_idx_prim.write(reinterpret_cast<char*>(&off64), sizeof(off64));
 
-        // índice secundário: title_len (int32) + title bytes + offset (int64)
         int32_t tlen = static_cast<int32_t>(r.titulo.size());
         fout_idx_sec.write(reinterpret_cast<char*>(&tlen), sizeof(tlen));
         fout_idx_sec.write(r.titulo.data(), tlen);
         fout_idx_sec.write(reinterpret_cast<char*>(&off64), sizeof(off64));
 
         total_reg++;
-        if (total_reg % 100000 == 0) {
+        if (total_reg % 100000 == 0)
             cout << "[UPLOAD] Registros processados: " << total_reg << "\n";
-        }
     }
 
     fin.close();

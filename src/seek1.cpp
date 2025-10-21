@@ -64,7 +64,8 @@ int main(int argc, char** argv) {
     Registro r = campos_para_registro(campos);
 
     // calcular blocos lidos no datafile: assumimos que lemos até a linha (off64 + linha.size())
-    long data_bytes_lidos = linea_tamanho_tentativa=0;
+    long linha_tamanho_tentativa = 0;
+    long data_bytes_lidos = 0;
     // Aproximação: lemos 1 bloco se offset dentro de 1 bloco e eventualmente mais dependendo do tamanho da linha.
     long bytes_ate_offset = off64;
     long linha_bytes = linha.size() + 1;
