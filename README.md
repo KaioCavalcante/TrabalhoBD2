@@ -14,10 +14,14 @@ mkdir -p data db
 # executar upload
 docker run --rm -v $(pwd)/data:/data tp2 ./bin/upload /data/input.csv
 
-# procurar registros
-docker run --rm -v $(pwd)/data:/data tp2 ./bin/findrec 123
-docker run --rm -v $(pwd)/data:/data tp2 ./bin/seek1 123
-docker run --rm -v $(pwd)/data:/data tp2 "./bin/seek2 Título Exato"
+# Buscar registro por ID (modo sequencial)
+make docker-run-findrec ID=123
+
+# Buscar registro por ID (índice primário)
+make docker-run-seek1 ID=123
+
+# Buscar registro por título (índice secundário)
+make docker-run-seek2 TITULO="Um Título Exato"
 
 ## Local (sem Docker)
 ./bin/upload data/input.csv
