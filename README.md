@@ -9,7 +9,7 @@ make docker-build
 
 # preparar pasta de dados
 mkdir -p data db
-# colocar o CSV de entrada em data/input.csv
+# colocar o CSV de entrada em data/artigo.csv
 
 # executar upload
 docker run --rm -v $(pwd)/data:/data tp2 ./bin/upload /data/input.csv

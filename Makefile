@@ -3,11 +3,12 @@ CXXFLAGS = -O2 -std=c++17 -Iinclude
 SRC = src
 BIN = bin
 
+.PHONY: all build clean docker-build docker-run-upload docker-run-findrec docker-run-seek1 docker-run-seek2
+
 all: build
 
 build: upload findrec seek1 seek2
 
-# cria bin se não existir antes de compilar
 $(BIN):
 	mkdir -p $(BIN)
 
@@ -25,3 +26,18 @@ seek2: $(BIN) $(SRC)/seek2.cpp $(SRC)/registro.cpp $(SRC)/util.cpp
 
 clean:
 	rm -rf $(BIN)/*
+
+docker-build:
+	docker build -t tp2 .
+
+docker-run-upload:
+	docker run --rm -v $(PWD)/data:/data tp2 ./bin/upload /data/artigo.csv
+
+docker-run-findrec:
+	docker run --rm -v $(PWD)/data:/data tp2 ./bin/findrec $(ID)
+
+docker-run-seek1:
+	docker run --rm -v $(PWD)/data:/data tp2 ./bin/seek1 $(ID)
+
+docker-run-seek2:
+	docker run --rm -v $(PWD)/data:/data tp2 ./bin/seek2 "$(TITULO)"
