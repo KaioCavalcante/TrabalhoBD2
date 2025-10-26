@@ -114,6 +114,7 @@ Snippet: Spatially-multiplexed MIMO markers. H Uchiyama, S Haruyama, A Shimada -
 [ESTATÍSTICA] Blocos totais (indice secundario): 21183
 
 
-
+# Documentação do trabalho
+[Baixar documentação (PDF)] (TP2_Documentacao.pdf)
 
 
