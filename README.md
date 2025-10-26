@@ -10,7 +10,7 @@ make build
 make docker-build
 
 # preparar pasta de dados
-mkdir -p data db
+mkdir -p data/db
 
 # colocar o CSV de entrada em data/artigo.csv
 
