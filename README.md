@@ -115,6 +115,4 @@ Snippet: Spatially-multiplexed MIMO markers. H Uchiyama, S Haruyama, A Shimada -
 
 
 # Documentação do trabalho
-[Baixar documentação (PDF)] (TP2_Documentacao.pdf)
-
-
+[Baixar documentação (PDF)](TP2_Documentacao.pdf)
