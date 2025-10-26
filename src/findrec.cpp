@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
         cerr << "Uso: findrec <ID>\n";
         return 1;
     }
-    int id_busca = stoi(argv[1]);
+    int id_busca = safe_stoi(argv[1]);
     string dados_path = "/data/db/dados.csv";
 
     ifstream fin(dados_path, ios::binary);
@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
         bytes_lidos += linha.size() + 1;
         auto campos = dividir_csv(linha);
         if (campos.size() >= 1) {
-            int id = campos[0].empty() ? 0 : stoi(campos[0]);
+            int id = campos[0].empty() ? 0 : safe_stoi(campos[0]);
             if (id == id_busca) {
                 r = campos_para_registro(campos);
                 achou = true;

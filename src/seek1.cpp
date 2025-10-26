@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
         cerr << "Uso: seek1 <ID>\n";
         return 1;
     }
-    int id_busca = stoi(argv[1]);
+    int id_busca = safe_stoi(argv[1]);
     string dados_path = "/data/db/dados.csv";
     string idx_prim = "/data/db/indice_primario.dat";
 

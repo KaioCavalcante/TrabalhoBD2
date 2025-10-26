@@ -2,6 +2,8 @@
 #include <sstream>
 #include <algorithm>
 #include <iostream>
+#include <cctype>
+#include <limits>
 
 std::vector<std::string> dividir_csv(const std::string &linha_inicial, std::istream *stream_restante) {
     std::string linha = linha_inicial;
@@ -18,11 +20,9 @@ std::vector<std::string> dividir_csv(const std::string &linha_inicial, std::istr
         linha += '\n' + extra;
         aspas_abertas = conta_aspas(linha) % 2;
     }
-
     std::vector<std::string> campos;
     std::string atual;
     entre_aspas = false;
-
     for (size_t i = 0; i < linha.size(); ++i) {
         char c = linha[i];
 
@@ -47,11 +47,11 @@ std::vector<std::string> dividir_csv(const std::string &linha_inicial, std::istr
 
 Registro campos_para_registro(const std::vector<std::string> &campos) {
     Registro r;
-    try { r.id = !campos[0].empty() ? std::stoi(campos[0]) : 0; } catch(...) { r.id=0; }
+    r.id = campos.size() > 0 ? safe_stoi(campos[0], 0) : 0;
     r.titulo = campos.size() > 1 ? campos[1] : "";
-    try { r.ano = campos.size() > 2 && !campos[2].empty() ? std::stoi(campos[2]) : 0; } catch(...) { r.ano=0; }
+    r.ano = campos.size() > 2 ? safe_stoi(campos[2], 0) : 0;
     r.autores = campos.size() > 3 ? campos[3] : "";
-    try { r.citacoes = campos.size() > 4 && !campos[4].empty() ? std::stoi(campos[4]) : 0; } catch(...) { r.citacoes=0; }
+    r.citacoes = campos.size() > 4 ? safe_stoi(campos[4], 0) : 0;
     r.data_atualizacao = campos.size() > 5 ? campos[5] : "";
     r.snippet = campos.size() > 6 ? campos[6] : "";
     return r;
