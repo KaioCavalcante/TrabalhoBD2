@@ -2,17 +2,17 @@
 
 # Voce pode baixar os dados para teste nesse link https://drive.google.com/file/d/1EVoP0d9Wwzj1O6eoFIkel9I3cpe43Gbv/view
 
+# preparar pasta de dados
+mkdir -p data/db
+
+# colocar o CSV de entrada em data/artigo.csv
+
 ## Como compilar localmente
 make build
 
 ## Como rodar via Docker (recomendado)
 # construir imagem
 make docker-build
-
-# preparar pasta de dados
-mkdir -p data/db
-
-# colocar o CSV de entrada em data/artigo.csv
 
 # executar upload
 docker run --rm -v $(pwd)/data:/data tp2 ./bin/upload /data/artigo.csv
