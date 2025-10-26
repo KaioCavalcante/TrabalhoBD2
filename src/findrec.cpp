@@ -1,6 +1,3 @@
-// findrec.cpp
-// Uso: ./bin/findrec <ID>
-// Faz busca direta (varredura) no arquivo de dados, conta blocos lidos no datafile.
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -29,7 +26,7 @@ int main(int argc, char** argv) {
     Registro r;
 
     while (std::getline(fin, linha)) {
-        bytes_lidos += linha.size() + 1; // aproximação (nl)
+        bytes_lidos += linha.size() + 1;
         auto campos = dividir_csv(linha);
         if (campos.size() >= 1) {
             int id = campos[0].empty() ? 0 : stoi(campos[0]);

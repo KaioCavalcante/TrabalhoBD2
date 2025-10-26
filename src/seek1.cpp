@@ -1,10 +1,8 @@
-// seek1.cpp
-// Uso: ./bin/seek1 <ID>
-// Procura no indice primario (arquivo de pares id->offset), conta blocos lidos no indice e depois lê datafile por offset.
 #include <iostream>
 #include <fstream>
 #include <string>
 #include "util.hpp"
+#include <stdint.h>
 
 using namespace std;
 
@@ -50,8 +48,6 @@ int main(int argc, char** argv) {
         cout << "[ESTATÍSTICA] Blocos totais (indice primario): " << idx_blocos_total << "\n";
         return 0;
     }
-
-    // Lê do arquivo de dados por offset
     ifstream fdados(dados_path, ios::binary);
     if (!fdados.is_open()) {
         cerr << "[ERRO] Não foi possível abrir dados: " << dados_path << "\n";
@@ -59,14 +55,11 @@ int main(int argc, char** argv) {
     }
     fdados.seekg(off64);
     string linha;
-    std::getline(fdados, linha); // linha do registro
+    std::getline(fdados, linha); 
     auto campos = dividir_csv(linha);
     Registro r = campos_para_registro(campos);
-
-    // calcular blocos lidos no datafile: assumimos que lemos até a linha (off64 + linha.size())
     long linha_tamanho_tentativa = 0;
     long data_bytes_lidos = 0;
-    // Aproximação: lemos 1 bloco se offset dentro de 1 bloco e eventualmente mais dependendo do tamanho da linha.
     long bytes_ate_offset = off64;
     long linha_bytes = linha.size() + 1;
     long data_bl_lidos = bytes_para_blocos(bytes_ate_offset + linha_bytes, bloco) - bytes_para_blocos(bytes_ate_offset, bloco);

@@ -1,12 +1,27 @@
 #include "util.hpp"
 #include <sstream>
 #include <algorithm>
+#include <iostream>
 
-// Parser CSV robusto, separador ';', suporta aspas e aspas duplas escapadas ("")
-std::vector<std::string> dividir_csv(const std::string &linha) {
+std::vector<std::string> dividir_csv(const std::string &linha_inicial, std::istream *stream_restante) {
+    std::string linha = linha_inicial;
+    bool entre_aspas = false;
+    auto conta_aspas = [](const std::string &s) {
+        int count = 0;
+        for (char c : s) if (c == '"') count++;
+        return count;
+    };
+    int aspas_abertas = conta_aspas(linha) % 2;
+    while (aspas_abertas && stream_restante && !stream_restante->eof()) {
+        std::string extra;
+        std::getline(*stream_restante, extra);
+        linha += '\n' + extra;
+        aspas_abertas = conta_aspas(linha) % 2;
+    }
+
     std::vector<std::string> campos;
     std::string atual;
-    bool entre_aspas = false;
+    entre_aspas = false;
 
     for (size_t i = 0; i < linha.size(); ++i) {
         char c = linha[i];
@@ -54,7 +69,6 @@ std::string registro_para_csvline(const Registro &r) {
         if (aspas) out.push_back('"');
         return out;
     };
-
     ss << r.id << ";"
        << escape(r.titulo) << ";"
        << r.ano << ";"

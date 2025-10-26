@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <istream>
 
 struct Registro {
     int id;
@@ -12,7 +13,7 @@ struct Registro {
     std::string snippet;
 };
 
-std::vector<std::string> dividir_csv(const std::string &linha);
+std::vector<std::string> dividir_csv(const std::string &linha_inicial, std::istream *stream_restante = nullptr);
 Registro campos_para_registro(const std::vector<std::string> &campos);
 std::string registro_para_csvline(const Registro &r);
 long bytes_para_blocos(long bytes, long tam_bloco);
